@@ -186,6 +186,7 @@ def run(
     else:
         dataset = LoadImages(source, img_size=imgsz, stride=stride, auto=pt, vid_stride=vid_stride)
     vid_path, vid_writer = [None] * bs, [None] * bs
+    vid_path1, vid_writer1 = [None] * bs, [None] * bs
 
     # Run inference
     model.warmup(imgsz=(1 if pt or model.triton else bs, 3, *imgsz))  # warmup
@@ -247,13 +248,15 @@ def run(
 
             p = Path(p)  # to Path
             save_path = str(save_dir / p.name)  # im.jpg
-            ori_path = save_path
+            # print("save path:", save_path)
+            path_tmp = Path(save_path)
+            ori_path = path_tmp.with_name("orientation.mp4")
             txt_path = str(save_dir / "labels" / p.stem) + ("" if dataset.mode == "image" else f"_{frame}")  # im.txt
             s += "{:g}x{:g} ".format(*im.shape[2:])  # print string
             gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
             imc = im0.copy() if save_crop else im0  # for save_crop
             annotator = Annotator(im0, line_width=line_thickness, example=str(names))
-
+            image_with_arrow = im0s.copy()
             if len(det):
 
                 det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0.shape).round()
@@ -295,7 +298,6 @@ def run(
                 # main body of vehicle orientation detect
                 if ori_detect:
                     obj = check_containment(rects, conf_thres)
-                    image_with_arrow = im0s.copy()
                     h1, w1 = image_with_arrow.shape[:2]
                     if len(obj) != 0:
                         for k, con in enumerate(obj):
@@ -351,10 +353,13 @@ def run(
                         else:
                             cv2.imwrite(ori_savepath, images[0])
                 else:  # 'video' or 'stream'
-                    if vid_path[i] != save_path:  # new video
+                    if vid_path[i] != save_path or vid_path1[i] != ori_path:  # new video
                         vid_path[i] = save_path
+                        vid_path1[i] = ori_path
                         if isinstance(vid_writer[i], cv2.VideoWriter):
                             vid_writer[i].release()  # release previous video writer
+                        if isinstance(vid_writer1[i], cv2.VideoWriter):
+                            vid_writer1[i].release()  # release previous video writer
                         if vid_cap:  # video
                             fps = vid_cap.get(cv2.CAP_PROP_FPS)
                             w = int(vid_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -362,35 +367,15 @@ def run(
                         else:  # stream
                             fps, w, h = 30, im0.shape[1], im0.shape[0]
                         save_path = str(Path(save_path).with_suffix(".mp4"))  # force *.mp4 suffix on results videos
+                        ori_path = str(ori_path)
                         vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*"mp4v"), fps, (w, h))
+                        vid_writer1[i] = cv2.VideoWriter(ori_path, cv2.VideoWriter_fourcc(*"mp4v"), fps, (w, h))
                     vid_writer[i].write(im0)
+                    vid_writer1[i].write(image_with_arrow)
+
 
         # Print time (inference-only)
         LOGGER.info(f"{s}{'' if len(det) else '(no detections), '}{dt[1].dt * 1E3:.1f}ms")
-    if ori_detect:
-        if len(images) != 0 and dataset.mode == "video":
-            fr1 = images[0]
-            h1, w1 = fr1.shape[0], fr1.shape[1]
-            if ori_savepath == "yolo":
-                ori_path = ""
-                if os.path.exists("./runs/detect/exp2"):
-                    j = 2
-                    while os.path.exists("./runs/detect/exp"+str(j)):
-                        j = j+1
-                    j = 2 if j == 2 else j-1
-                    ori_path = "./runs/detect/exp"+str(j)+"/orientation.mp4"
-                else:
-                    ori_path = "./runs/detect/exp/orientation.mp4"
-                out = cv2.VideoWriter(ori_path, cv2.VideoWriter_fourcc(*"mp4v"), 30, (w1, h1))
-                for fr in images:
-                    out.write(fr)
-                out.release()
-            else:
-                out = cv2.VideoWriter(ori_savepath, cv2.VideoWriter_fourcc(*"mp4v"), 30, (w1, h1))
-                for fr in images:
-                    out.write(fr)
-                out.release()
-
     # Print results
     t = tuple(x.t / seen * 1e3 for x in dt)  # speeds per image
     LOGGER.info(f"Speed: %.1fms pre-process, %.1fms inference, %.1fms NMS per image at shape {(1, 3, *imgsz)}" % t)
