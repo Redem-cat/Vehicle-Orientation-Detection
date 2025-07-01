@@ -4,6 +4,12 @@
 
 YOLOv5: [ultralytics/yolov5: YOLOv5 🚀 in PyTorch > ONNX > CoreML > TFLite](https://github.com/ultralytics/yolov5)
 
+## 🌍 Documentation Languages
+
+- 🇺🇸 [English (this file)](./README.md)
+- 🇨🇳 [简体中文 (readme_ch-CN.md)](./readme.zh-CN.md)
+
+
 A vehicle-orientation detection system based on YOLOv5 for real-time vehicle location detection. It uses the relative location of tires to obtain the direction. The code is compatible with PyTorch 1.7+ and supports GPU acceleration.
 
 Due to various objective factors and the author's own limitations in coding ability, please forgive any shortcomings. Your valuable suggestions for improvement are sincerely hoped for.
