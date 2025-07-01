@@ -19,7 +19,7 @@ Due to various objective factors and the author's own limitations in coding abil
 ## 🚀 Major Functions
 - ✅ **Vehicle detection**: High quality YOLOv5 object detection.
 - 🧭 **Orientation**: Method of detecting orientations of complex objects based on key points.
-- 📊 **Visualized output**: Output marked with ellipses and arrow lines.
+- 📊 **Visualized output**: Output marked with ellipses and arrow lines，Real-time Videos are supported.
 
 ## 📦 Quick start
 
@@ -51,7 +51,16 @@ This project has **3** more parameters compared to original YOLOv5. Description:
 --ori_savepath  # Save path for orientation detection. Default=runs/detect/expx/orientation.jpg/mp4.
 ```
 
+## 📚 Dataset Description
 
+The training dataset was constructed through the following process:
+- Collected raw vehicle images from public web resources using Python crawlers
+- Manually annotated key feature points using labelImg script
+- Final annotated dataset contains approximately 600 images (including vehicle positions, tires, and body keypoints)
+
+Despite the limited dataset size, the optimized model achieves:
+- Real-time video stream processing (≥25 FPS, hardware-dependent)
+- Robust orientation detection under varying lighting conditions and vehicle angles
 
 ## Extra information
 
