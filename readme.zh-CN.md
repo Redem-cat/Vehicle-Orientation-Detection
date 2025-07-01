@@ -4,6 +4,9 @@
 
 YOLOv5: [ultralytics/yolov5: YOLOv5 🚀 in PyTorch > ONNX > CoreML > TFLite](https://github.com/ultralytics/yolov5)
 
+- 🇺🇸 [English (this file)](./README.md)
+- 🇨🇳 [简体中文 (readme_ch-CN.md)](./readme.zh-CN.md)
+
 一个基于YOLOv5改进的车辆朝向检测系统，支持实时检测车辆位置并根据轮胎的连线得到车辆的行驶方向。代码兼容PyTorch 1.7+，支持GPU加速。
 
 本项目是作为课程大作业完成的，受各种客观因素和作者本人水平的限制，不足之处请予以谅解，希望您能提出宝贵的修改意见。
