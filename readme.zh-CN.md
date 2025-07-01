@@ -2,12 +2,12 @@
 
 ![项目封面图](./orientation/cover.jpg) 
 
-YOLOv5: [ultralytics/yolov5: YOLOv5 🚀 in PyTorch > ONNX > CoreML > TFLite](https://github.com/ultralytics/yolov5)
+YOLOv5模型地址: [ultralytics/yolov5: YOLOv5 🚀 in PyTorch > ONNX > CoreML > TFLite](https://github.com/ultralytics/yolov5)
 
 - 🇺🇸 [English ](./README.md)
 - 🇨🇳 [简体中文 (本文件)](./readme.zh-CN.md)
 
-一个基于YOLOv5改进的车辆朝向检测系统，支持实时检测车辆位置并根据轮胎的连线得到车辆的行驶方向。代码兼容PyTorch 1.7+，支持GPU加速。
+一个基于YOLOv5模型改进的车辆朝向检测系统，支持实时检测车辆位置并根据轮胎的连线得到车辆的行驶方向。代码兼容PyTorch 1.7+，支持GPU加速。
 
 本项目是作为课程大作业完成的，受各种客观因素和作者本人水平的限制，不足之处请予以谅解，希望您能提出宝贵的修改意见。
 
@@ -48,7 +48,16 @@ python detect.py --weights ./orientation/vehicle_orientation.pt  --img 640 --con
 --ori_savepath  # 检测后生成的图片/视频的保存位置.默认为runs/detect/expx/orientation.jpg/mp4,即保存在yolov5默认的保存路径
 ```
 
+## 📚 数据集说明
 
+本模型使用的训练数据集通过以下流程构建：
+- 使用Python爬虫从公开网络资源获取原始车辆图片
+- 采用labelImg脚本手动标注关键特征点
+- 最终标注数据集约600张图片（包含车辆位置、轮胎及车身关键点）
+
+尽管数据规模有限，但模型经过优化后仍能实现：
+- 视频流实时识别（≥25 FPS，依赖硬件配置）
+- 对不同光照和角度的车辆朝向保持鲁棒性
 
 ## 额外说明
 
